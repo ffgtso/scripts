@@ -34,7 +34,15 @@ if [ $? -eq 0 ]; then
  for i in ${gws}
  do
   cnt=0
-  while [ ! -e ${TMPFILE}-batman-${i}-rc ]; do sleep 1; cnt=$(expr $cnt + 1 ); if [ $cnt -gt $MAXWAIT ]; then echo "TIMEOUT batman trace ${i}" >> ${TMPFILE}-batman-${i}; fi; done
+  while [ ! -e ${TMPFILE}-batman-${i}-rc -a $cnt -le $MAXWAIT ]
+  do
+   sleep 1
+   cnt=$(expr $cnt + 1 )
+   if [ $cnt -gt $MAXWAIT ]
+   then
+    echo "TIMEOUT batman trace ${i}" >> ${TMPFILE}-batman-${i}
+   fi
+   done
  done
 
  for i in ${gws}
@@ -44,12 +52,28 @@ if [ $? -eq 0 ]; then
 fi
 
 cnt=0
-while [ ! -e ${TMPFILE}-pingext-rc ]; do sleep 1; cnt=$(expr $cnt + 1 ); if [ $cnt -gt $MAXWAIT ]; then echo "TIMEOUT ping ext"; fi; done
+while [ ! -e ${TMPFILE}-pingext-rc -a $cnt -le $MAXWAIT ]
+do
+ sleep 1
+ cnt=$(expr $cnt + 1 )
+# if [ $cnt -gt $MAXWAIT ]
+# then
+#  echo "TIMEOUT ping ext"
+# fi
+done
 extrc="$(cat ${TMPFILE}-pingext-rc)"
 
 if [ -n "$GW" ]; then
  cnt=0
- while [ ! -e ${TMPFILE}-pingdef-rc ]; do sleep 1; cnt=$(expr $cnt + 1 ); if [ $cnt -gt $MAXWAIT ]; then echo "TIMEOUT ping int"; fi; done
+ while [ ! -e ${TMPFILE}-pingdef-rc -a $cnt -le $MAXWAIT ]
+ do
+  sleep 1
+  cnt=$(expr $cnt + 1 )
+#  if [ $cnt -gt $MAXWAIT ]
+#  then
+#   echo "TIMEOUT ping int"
+#  fi
+ done
  defrc="$(cat ${TMPFILE}-pingdef-rc)"
 fi
 
