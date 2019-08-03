@@ -28,7 +28,7 @@ echo "${gws}" | /bin/grep : >/dev/null
 if [ $? -eq 0 ]; then
  for i in ${gws}
  do
-  (echo -n "$(date +'%H:%M:%S') - " > ${TMPFILE}-batman-${i}; /usr/bin/ssh ${KEYFILE} ${GWLLADDR} echo \; batctl tr $i >> ${TMPFILE}-batman-${i}; echo $? > ${TMPFILE}-batman-${i}-rc) & 2>/dev/null
+  (echo -ne "\n$(date +'%H:%M:%S') - " > ${TMPFILE}-batman-${i}; /usr/bin/ssh ${KEYFILE} ${GWLLADDR} batctl tr $i >> ${TMPFILE}-batman-${i}; echo $? > ${TMPFILE}-batman-${i}-rc) & 2>/dev/null
  done
 
  for i in ${gws}
@@ -45,23 +45,22 @@ fi
 
 cnt=0
 while [ ! -e ${TMPFILE}-pingext-rc ]; do sleep 1; cnt=$(expr $cnt + 1 ); if [ $cnt -gt $MAXWAIT ]; then echo "TIMEOUT ping ext"; fi; done
+extrc="$(cat ${TMPFILE}-pingext-rc)"
+
 if [ -n "$GW" ]; then
  cnt=0
  while [ ! -e ${TMPFILE}-pingdef-rc ]; do sleep 1; cnt=$(expr $cnt + 1 ); if [ $cnt -gt $MAXWAIT ]; then echo "TIMEOUT ping int"; fi; done
-fi
-
-if [ -n "$GW" ]; then
  defrc="$(cat ${TMPFILE}-pingdef-rc)"
 fi
 
-if [ $extrc = "0" ]; then
+if [ "${extrc}" = "0" ]; then
  echo -n "${NOW}: EXT. OK   " >> ${TMPFILE}
 else
  echo -n "${NOW}: EXT. FAIL " >> ${TMPFILE}
 fi
 
 if [ -n "$GW" ]; then
- if [ $defrc = "0" ]; then
+ if [ "${defrc}" = "0" ]; then
   echo -n "/ DEFAULT OK    " >> ${TMPFILE}
  else
   echo -n "/ DEFAULT FAIL  " >> ${TMPFILE}
