@@ -1,9 +1,8 @@
 #!/bin/bash
 #
 # Supposed to run from a VM that's connected via ensX to a
-# Gluon-VM. You need a passwordless ssh key installed on the
-# Gluon-VM, it's br-client's link-local IPv6 address. Have
-# fun ;)
+# Gluon-VM. You need a passwordless ssh access to the Gluon-VM
+# and its br-client's link-local IPv6 address. Have fun ;)
 #
 GW=$(/sbin/ip -4 route show | /usr/bin/awk '/^default/ {if($2=="via") {printf("%s", $3);}}')
 NOW="$(date +'%Y-%m-%d %H:%M:%S')"
